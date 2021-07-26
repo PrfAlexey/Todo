@@ -4,6 +4,7 @@ import (
 	"ads/pkg/handler"
 	"ads/pkg/repository"
 	"ads/pkg/service"
+	"log"
 
 	"github.com/labstack/echo"
 )
@@ -15,9 +16,14 @@ type Server struct {
 func NewServer() *Server {
 	var server Server
 	e := echo.New()
-	repos := repository.NewRepository()
+	db, err := repository.NewPostgresDB()
+	if err != nil {
+		log.Fatal(err)
+	}
+	repos := repository.NewRepository(db)
 	services := service.NewService(repos)
-	handlers := handler.NewHandler(services)
+	handler := handler.NewHandler(services)
+	handler.InitHandler(e)
 	server.e = e
 	return &server
 }

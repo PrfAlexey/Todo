@@ -15,8 +15,7 @@ func NewHandler(services *service.Service) *Handler {
 }
 
 func (h *Handler) InitHandler(e *echo.Echo) {
-	var handler Handler
-
+	handler := h
 	e.POST("/auth/sign-up", handler.SignUp)
 	e.POST("/auth/sign-in", handler.SignIn)
 

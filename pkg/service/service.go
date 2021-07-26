@@ -1,6 +1,6 @@
 package service
 
-import "asfdasf/pkg/repository"
+import "ads/pkg/repository"
 
 type Authorization interface {
 }

@@ -2,7 +2,6 @@ package repository
 
 type Authorization interface {
 }
-
 type TodoList interface {
 }
 
@@ -15,6 +14,6 @@ type Repository struct {
 	TodoItem
 }
 
-func NewRepository() *Repository {
+func NewRepository(db *PostgresDB) *Repository {
 	return &Repository{}
 }
