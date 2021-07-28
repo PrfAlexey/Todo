@@ -7,7 +7,15 @@ import (
 )
 
 const (
-	DBConnect = "user=postgres dbname=TodoDB password=1234 host=localhost port=5432 sslmode=disable"
+	DBConnect = "user=postgres dbname=postgres password=1234 host=localhost port=5432 sslmode=disable pool_max_conns=50"
+)
+
+const (
+	usersTable      = "users"
+	todoListTable   = "todo_lists"
+	userListsTable  = "users_lists"
+	todoItemsTable  = "todo_items"
+	listsItemsTable = "lists_items"
 )
 
 type PostgresDB struct {

@@ -4,9 +4,9 @@ import (
 	"ads/pkg/handler"
 	"ads/pkg/repository"
 	"ads/pkg/service"
-	"log"
 
 	"github.com/labstack/echo"
+	"github.com/sirupsen/logrus"
 )
 
 type Server struct {
@@ -18,7 +18,7 @@ func NewServer() *Server {
 	e := echo.New()
 	db, err := repository.NewPostgresDB()
 	if err != nil {
-		log.Fatal(err)
+		logrus.Fatalf("Failed to initialization db: %s", err.Error())
 	}
 	repos := repository.NewRepository(db)
 	services := service.NewService(repos)
