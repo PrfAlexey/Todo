@@ -1,8 +1,16 @@
 package handler
 
-import "github.com/labstack/echo"
+import (
+	"net/http"
+
+	"github.com/labstack/echo"
+)
 
 func (h *Handler) CreateList(c echo.Context) error {
+	id := c.Get(userCtx)
+	c.JSON(http.StatusOK, map[string]interface{}{
+		"id": id,
+	})
 	return nil
 }
 

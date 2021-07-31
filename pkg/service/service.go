@@ -3,10 +3,14 @@ package service
 import (
 	"ads/models"
 	"ads/pkg/repository"
+	"net/http"
 )
 
 type Authorization interface {
 	CreateUser(user models.User) (int, error)
+	GenerateToken(username, password string) (string, error)
+	ParseToken(token string) (int, error)
+	CreateCookieWithValue(value string) *http.Cookie
 }
 
 type TodoList interface {

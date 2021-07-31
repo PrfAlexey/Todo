@@ -15,19 +15,22 @@ func NewHandler(services *service.Service) *Handler {
 }
 
 func (h *Handler) InitHandler(e *echo.Echo) {
-	handler := h
-	e.POST("/auth/sign-up", handler.SignUp)
-	e.POST("/auth/sign-in", handler.SignIn)
 
-	e.POST("/api/lists/", handler.CreateList)
-	e.GET("/api/lists/", handler.GetAllLists)
-	e.GET("/api/lists/:id", handler.GetListById)
-	e.PUT("/api/lists/:id", handler.UpdateList)
-	e.DELETE("/api/lists/:id", handler.DeleteList)
+	g := e.Group("/auth")
+	g.POST("/sign-up", h.SignUp)
+	g.POST("/sign-in", h.SignIn)
 
-	e.POST("/api/lists/:id/items", handler.CreateItem)
-	e.GET("/api/lists/:id/items", handler.GetAllItems)
-	e.GET("/api/lists/:id/items/:item_id", handler.GetItemById)
-	e.PUT("/api/lists/:id/items/:item_id", handler.UpdateItem)
-	e.DELETE("/api/lists/:id/items/:item_id", handler.DeleteItem)
+	a := e.Group("/api", h.userIdentity)
+
+	a.POST("/lists/", h.CreateList)
+	a.GET("/lists/", h.GetAllLists)
+	a.GET("/lists/:id", h.GetListById)
+	a.PUT("/lists/:id", h.UpdateList)
+	a.DELETE("/lists/:id", h.DeleteList)
+
+	a.POST("/lists/:id/items", h.CreateItem)
+	a.GET("/lists/:id/items", h.GetAllItems)
+	a.GET("/lists/:id/items/:item_id", h.GetItemById)
+	a.PUT("/lists/:id/items/:item_id", h.UpdateItem)
+	a.DELETE("/lists/:id/items/:item_id", h.DeleteItem)
 }

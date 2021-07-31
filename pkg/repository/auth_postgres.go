@@ -24,3 +24,10 @@ func (r *AuthPostgres) CreateUser(user models.User) (int, error) {
 
 	return id, nil
 }
+
+func (r *AuthPostgres) GetUser(username, password string) (models.User, error) {
+	var user models.User
+	err := r.db.pool.QueryRow(context.Background(), `SELECT * FROM users WHERE username=$1 AND password_hash=$2`, username, password).Scan(&user.Id, &user.Username, &user.Password, &user.Name)
+
+	return user, err
+}
