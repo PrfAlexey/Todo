@@ -25,6 +25,7 @@ func NewServer() *Server {
 	handler := handler.NewHandler(services)
 	handler.InitHandler(e)
 	server.e = e
+	/*done*/
 	return &server
 }
 
