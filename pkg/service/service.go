@@ -11,6 +11,7 @@ type Authorization interface {
 	GenerateToken(username, password string) (string, error)
 	ParseToken(token string) (int, error)
 	CreateCookieWithValue(value string) *http.Cookie
+	CheckUser(username, password string) (int, bool, error)
 }
 
 type TodoList interface {

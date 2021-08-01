@@ -84,6 +84,14 @@ func (s *AuthService) CreateCookieWithValue(value string) *http.Cookie {
 	return newCookie
 }
 
+func (s *AuthService) CheckUser(username, password string) (int, bool, error) {
+	user, err := s.repo.GetUser(username, generatePasswordHash(password))
+	if err != nil {
+		return 0, false, err
+	}
+	return user.Id, true, nil
+}
+
 func generatePasswordHash(password string) string {
 	hash := sha1.New()
 	hash.Write([]byte(password))
