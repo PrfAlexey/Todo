@@ -1,7 +1,7 @@
 package handler
 
 import (
-	"ads/models"
+	"Todo/models"
 	"log"
 	"net/http"
 

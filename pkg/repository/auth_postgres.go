@@ -1,7 +1,7 @@
 package repository
 
 import (
-	"ads/models"
+	"Todo/models"
 	"context"
 	"fmt"
 )

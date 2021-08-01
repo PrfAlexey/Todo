@@ -1,9 +1,9 @@
 package server
 
 import (
-	"ads/pkg/handler"
-	"ads/pkg/repository"
-	"ads/pkg/service"
+	"Todo/pkg/handler"
+	"Todo/pkg/repository"
+	"Todo/pkg/service"
 
 	"github.com/labstack/echo"
 	"github.com/sirupsen/logrus"
@@ -27,7 +27,7 @@ func NewServer() *Server {
 	server.e = e
 	return &server
 }
-//f
+
 func (s Server) ListenAndServe() {
 	s.e.Start(":8000")
 }

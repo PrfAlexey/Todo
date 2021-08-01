@@ -1,8 +1,8 @@
 package service
 
 import (
-	"ads/models"
-	"ads/pkg/repository"
+	"Todo/models"
+	"Todo/pkg/repository"
 	"net/http"
 )
 

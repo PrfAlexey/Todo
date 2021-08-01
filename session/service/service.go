@@ -1,8 +1,8 @@
 package service
 
 import (
-	"ads/session/repository"
-	"asfdasf/session"
+	"Todo/session/repository"
+	"Todo/session"
 	"math/rand"
 )
 

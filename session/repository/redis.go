@@ -1,7 +1,7 @@
 package repository
 
 import (
-	"asfdasf/session"
+	"Todo/session"
 	"fmt"
 
 	"github.com/gomodule/redigo/redis"

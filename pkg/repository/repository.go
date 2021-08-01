@@ -1,6 +1,6 @@
 package repository
 
-import "ads/models"
+import "Todo/models"
 
 type Authorization interface {
 	CreateUser(user models.User) (int, error)
