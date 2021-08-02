@@ -2,6 +2,7 @@ package repository
 
 import (
 	"Todo/session"
+	"errors"
 	"fmt"
 	"log"
 
@@ -18,14 +19,14 @@ func NewSessionRepository(c redis.Conn) session.Repository {
 
 func (r *SessionRepository) InsertSession(userId int, value string) error {
 	mkey := "sessions:" + value
-	result, err := redis.String(r.Conn.Do("SET", mkey, userId, "EX", 86400))
+	result, err := redis.String(r.Conn.Do("SETNX", mkey, userId, "EX", 86400))
 	if err != nil {
-		return err
+		return errors.New("Duplicate")
 	}
 	if result != "OK" {
 		return fmt.Errorf("result not OK")
 	}
-	return nil
+	return errors.New("Duplicate keys exist")
 }
 
 func (r *SessionRepository) CheckSession(value string) ( int, error) {

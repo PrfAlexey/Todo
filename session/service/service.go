@@ -22,11 +22,16 @@ func NewSessionService(s session.Repository) session.Service {
 }
 
 func (s *SessionService) CreateSession(userId int) (string, error) {
-	id := RandStringRunes(sessKeyLen)
-	err := s.repo.InsertSession(userId, id)
-	if err != nil {
-		return "", err
+	var id string
+	var err error
+	for {
+		id = RandStringRunes(sessKeyLen)
+		err = s.repo.InsertSession(userId, id)
+		if err.Error() == "Duplicate keys exist" {
+			break
+		}
 	}
+
 	return id, nil
 }
 
