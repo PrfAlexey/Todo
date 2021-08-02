@@ -7,7 +7,7 @@ import (
 )
 
 const (
-	DBConnect = "user=postgres dbname=postgres password=1234 host=localhost port=5432 sslmode=disable pool_max_conns=50"
+	DBConnect = "user=postgres dbname=postgres password=4444 host=localhost port=5432 sslmode=disable pool_max_conns=50"
 )
 
 const (

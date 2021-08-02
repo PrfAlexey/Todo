@@ -35,16 +35,38 @@ func (h *Handler) SignIn(c echo.Context) error {
 	if err := c.Bind(&input); err != nil {
 		log.Fatal(err)
 	}
-	token, err := h.services.Authorization.GenerateToken(input.Username, input.Password)
+	userId, err:=h.services.CheckUser(input.Username,input.Password)
+	if err!=nil {
+		log.Fatal(err)
+	}
+
+	id, err := h.sessServices.CreateSession(userId)
 	if err != nil {
 		log.Fatal(err)
 	}
-	cookie := h.services.Authorization.CreateCookieWithValue(token)
+
+	cookie := h.services.Authorization.CreateCookieWithValue(id)
 	c.SetCookie(cookie)
 
-	c.JSON(http.StatusOK, map[string]interface{}{
-		"token": token,
+	err1 := c.JSON(http.StatusOK, map[string]interface{}{
+		"session": id,
 	})
+	if err1!=nil {
+		log.Fatal(err1)
+	}
 
+	return nil
+}
+
+
+func (h *Handler) Logout(c echo.Context) error {
+	session, err := c.Cookie("Session_id")
+	if err!=nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+	}
+	err1 := h.sessServices.Logout(session.Value)
+	if err1!= nil {
+		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+	}
 	return nil
 }

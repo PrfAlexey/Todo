@@ -1,7 +1,7 @@
 package main
 
 import (
-	"ads/server"
+	"Todo/server"
 )
 
 func main() {

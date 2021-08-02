@@ -13,13 +13,13 @@ const (
 
 func (h *Handler) userIdentity(next echo.HandlerFunc) echo.HandlerFunc {
 	return func(ctx echo.Context) error {
-		header, err := ctx.Cookie(authorizationHeader)
+		session, err := ctx.Cookie("Session_id")
 
-		if header == nil {
+		if session == nil {
 			return echo.NewHTTPError(http.StatusUnauthorized, err.Error())
 		}
 
-		userId, err := h.services.Authorization.ParseToken(header.Value)
+		userId, err := h.sessServices.Check(session.Value)
 
 		if err != nil {
 			return echo.NewHTTPError(http.StatusUnauthorized, err.Error())

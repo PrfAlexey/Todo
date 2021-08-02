@@ -2,16 +2,20 @@ package handler
 
 import (
 	"Todo/pkg/service"
-
+	"Todo/session"
 	"github.com/labstack/echo"
 )
 
 type Handler struct {
 	services *service.Service
+	sessServices session.Service
 }
 
-func NewHandler(services *service.Service) *Handler {
-	return &Handler{services: services}
+func NewHandler(services *service.Service, sessServices session.Service) *Handler {
+	return &Handler{
+		services: services,
+		sessServices: sessServices,
+	}
 }
 
 func (h *Handler) InitHandler(e *echo.Echo) {
@@ -19,6 +23,7 @@ func (h *Handler) InitHandler(e *echo.Echo) {
 	g := e.Group("/auth")
 	g.POST("/sign-up", h.SignUp)
 	g.POST("/sign-in", h.SignIn)
+	g.DELETE("/logout", h.Logout)
 
 	a := e.Group("/api", h.userIdentity)
 

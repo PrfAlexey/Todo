@@ -75,7 +75,7 @@ func (s *AuthService) ParseToken(accesstoken string) (int, error) {
 
 func (s *AuthService) CreateCookieWithValue(value string) *http.Cookie {
 	newCookie := &http.Cookie{
-		Name:     "Authorization",
+		Name:     "Session_id",
 		Value:    value,
 		Expires:  time.Now().Add(72 * time.Hour),
 		HttpOnly: true,
@@ -84,13 +84,15 @@ func (s *AuthService) CreateCookieWithValue(value string) *http.Cookie {
 	return newCookie
 }
 
-func (s *AuthService) CheckUser(username, password string) (int, bool, error) {
+func (s *AuthService) CheckUser(username, password string) (int, error) {
 	user, err := s.repo.GetUser(username, generatePasswordHash(password))
 	if err != nil {
-		return 0, false, err
+		return 0, err
 	}
-	return user.Id, true, nil
+
+	return user.Id, nil
 }
+
 
 func generatePasswordHash(password string) string {
 	hash := sha1.New()
