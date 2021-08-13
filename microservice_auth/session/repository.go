@@ -1,7 +1,7 @@
 package session
 
 type Repository interface {
-	InsertSession(userId int, value string) error
+	InsertSession(userId uint64, value string) error
 	CheckSession(value string) (int, error)
 	DeleteSession(value string) error
 }

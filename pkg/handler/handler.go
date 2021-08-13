@@ -1,31 +1,32 @@
 package handler
 
 import (
-	"Todo/pkg/service"
-	"Todo/session"
+	"Todo/microservice_auth/client"
+	"Todo/pkg"
+	"Todo/server/middleware"
 	"github.com/labstack/echo"
 )
 
 type Handler struct {
-	services *service.Service
-	sessServices session.Service
+	services pkg.Service
+	rpcAuth  client.IAuthClient
 }
 
-func NewHandler(services *service.Service, sessServices session.Service) *Handler {
+func NewHandler(services pkg.Service, auth client.IAuthClient) *Handler {
 	return &Handler{
 		services: services,
-		sessServices: sessServices,
+		rpcAuth:  auth,
 	}
 }
 
-func (h *Handler) InitHandler(e *echo.Echo) {
+func (h *Handler) InitHandler(e *echo.Echo, auth middleware.Auth) {
 
 	g := e.Group("/auth")
 	g.POST("/sign-up", h.SignUp)
 	g.POST("/sign-in", h.SignIn)
 	g.DELETE("/logout", h.Logout)
 
-	a := e.Group("/api", h.userIdentity)
+	a := e.Group("/api", auth.UserIdentity)
 
 	a.POST("/lists/", h.CreateList)
 	a.GET("/lists/", h.GetAllLists)

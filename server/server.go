@@ -1,49 +1,57 @@
 package server
 
 import (
+	"Todo/microservice_auth/client"
 	"Todo/pkg/handler"
 	"Todo/pkg/repository"
 	"Todo/pkg/service"
-	seRep "Todo/session/repository"
-	seServ "Todo/session/service"
-	"flag"
-	"github.com/gomodule/redigo/redis"
+	"Todo/server/middleware"
+	"context"
+	"github.com/jackc/pgx/v4/pgxpool"
 	"github.com/labstack/echo"
-	"github.com/sirupsen/logrus"
+	"log"
 )
-var (
-	redisAddr = flag.String("addr", "redis://user:@localhost:6379/0", "redis addr")
+
+const (
+	DBConnect = "user=postgres dbname=postgres password=4444 host=localhost port=5432 sslmode=disable pool_max_conns=50"
 )
+
 type Server struct {
-	e *echo.Echo
+	rpcAuth client.IAuthClient
+	e       *echo.Echo
 }
 
 func NewServer() *Server {
 	var server Server
 	e := echo.New()
-	db, err := repository.NewPostgresDB()
+	pool, err := pgxpool.Connect(context.Background(), DBConnect)
 	if err != nil {
-		logrus.Fatalf("Failed to initialization db: %s", err.Error())
+		log.Fatal(err)
 	}
-	flag.Parse()
-	redisConn, err := redis.DialURL(*redisAddr)
+	err = pool.Ping(context.Background())
 	if err != nil {
-		logrus.Fatalf("Failed to initialization db redis : %s", err.Error())
+		log.Fatal(err)
 	}
-	sessionRepos := seRep.NewSessionRepository(redisConn)
-	repos := repository.NewRepository(db)
+
+	rpcAuth, err := client.NewAuthClient(":3001")
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	repos := repository.NewRepository(pool)
 
 	services := service.NewService(repos)
-	sessionServices := seServ.NewSessionService(sessionRepos)
 
-	handler := handler.NewHandler(services, sessionServices)
-	handler.InitHandler(e)
+	auth := middleware.NewAuth(rpcAuth)
+	handler := handler.NewHandler(services, rpcAuth)
+
+	handler.InitHandler(e, auth)
 	server.e = e
+	server.rpcAuth = rpcAuth
 	return &server
 }
 
 func (s Server) ListenAndServe() {
-
 	s.e.Start(":8000")
-
+	defer s.rpcAuth.Close()
 }
