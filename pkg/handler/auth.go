@@ -12,15 +12,15 @@ import (
 func (h *Handler) SignUp(c echo.Context) error {
 	var input models.User
 
-	session, err := c.Cookie("Session_id")
-	if err != nil {
-		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
-	}
-
-	userID, _ := h.rpcAuth.Check(session.Value)
-	if userID != 0 {
-		return echo.NewHTTPError(http.StatusBadRequest, "user is already logged in")
-	}
+	//session, err := c.Cookie("Session_id")
+	//if err != nil {
+	//	return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
+	//}
+	//
+	//userID, _ := h.rpcAuth.Check(session.Value)
+	//if userID != 0 {
+	//	return echo.NewHTTPError(http.StatusBadRequest, "user is already logged in")
+	//}
 
 	if err := c.Bind(&input); err != nil {
 		log.Fatal(err)
@@ -37,7 +37,6 @@ func (h *Handler) SignUp(c echo.Context) error {
 
 	cookie := h.services.CreateCookieWithValue(sessionID)
 	c.SetCookie(cookie)
-
 
 	c.JSON(http.StatusOK, map[string]interface{}{
 		"id": id,

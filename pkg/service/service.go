@@ -26,14 +26,14 @@ func NewService(rep pkg.Repository) pkg.Service {
 	}
 }
 
-func (s *Service) CreateUser(user models.User) (int, error) {
+func (s *Service) CreateUser(user models.User) (uint64, error) {
 	user.Password = GeneratePasswordHash(user.Password)
 	return s.repo.CreateUser(user)
 }
 
 type tokenClaims struct {
 	jwt.StandardClaims
-	UserId int `json:"user_id"`
+	UserId uint64 `json:"user_id"`
 }
 
 func (s *Service) GenerateToken(username, password string) (string, error) {
@@ -54,7 +54,7 @@ func (s *Service) GenerateToken(username, password string) (string, error) {
 
 }
 
-func (s *Service) ParseToken(accesstoken string) (int, error) {
+func (s *Service) ParseToken(accesstoken string) (uint64, error) {
 	token, err := jwt.ParseWithClaims(accesstoken, &tokenClaims{}, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return nil, errors.New("invalid signing method")
@@ -85,7 +85,7 @@ func (s *Service) CreateCookieWithValue(value string) *http.Cookie {
 	return newCookie
 }
 
-func (s *Service) CheckUser(username, password string) (int, error) {
+func (s *Service) CheckUser(username, password string) (uint64, error) {
 	user, err := s.repo.GetUser(username, GeneratePasswordHash(password))
 	if err != nil {
 		return 0, err
@@ -100,29 +100,29 @@ func GeneratePasswordHash(password string) string {
 	return fmt.Sprintf("%x", hash.Sum([]byte(salt)))
 }
 
-func (s *Service) CreateList(userId int, list models.TodoList) (int, error) {
+func (s *Service) CreateList(userId uint64, list models.TodoList) (uint64, error) {
 	return s.repo.CreateList(userId, list)
 }
 
-func (s *Service) GetAllLists(userID int) ([]models.TodoList, error) {
+func (s *Service) GetAllLists(userID uint64) ([]models.TodoList, error) {
 	return s.repo.GetAllLists(userID)
 }
 
-func (s *Service) GetListByID(userID int, listID int) (models.TodoList, error) {
+func (s *Service) GetListByID(userID uint64, listID uint64) (models.TodoList, error) {
 	return s.repo.GetListByID(userID, listID)
 }
 
-func (s *Service) DeleteList(userID, listID int) error {
+func (s *Service) DeleteList(userID, listID uint64) error {
 	return s.repo.DeleteList(userID, listID)
 }
-func (s *Service) UpdateList(userID, listID int, input models.UpdateListInput) error {
+func (s *Service) UpdateList(userID, listID uint64, input models.UpdateListInput) error {
 	if err := input.Validate(); err != nil {
 		return err
 	}
 	return s.repo.UpdateList(userID, listID, input)
 }
 
-func (s *Service) CreateItem(userID, listID int, item models.TodoItem) (int, error) {
+func (s *Service) CreateItem(userID, listID uint64, item models.TodoItem) (uint64, error) {
 	_, err := s.repo.GetListByID(userID, listID)
 	if err != nil {
 		return 0, err
@@ -130,6 +130,6 @@ func (s *Service) CreateItem(userID, listID int, item models.TodoItem) (int, err
 	return s.repo.CreateItems(listID, item)
 }
 
-func (s *Service) GetAllItems(userID, listID int) ([]models.TodoItem, error) {
+func (s *Service) GetAllItems(userID, listID uint64) ([]models.TodoItem, error) {
 	return s.repo.GetAllItems(userID, listID)
 }

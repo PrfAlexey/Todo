@@ -3,28 +3,28 @@ package models
 import "errors"
 
 type TodoList struct {
-	Id          int    `json:"id"`
+	Id          uint64 `json:"id"`
 	Title       string `json:"title"`
 	Description string `json:"description"`
 }
 
 type UserList struct {
-	Id     int
-	UserId int
-	ListId int
+	Id     uint64
+	UserId uint64
+	ListId uint64
 }
 
 type TodoItem struct {
-	Id          int    `json:"id"`
+	Id          uint64    `json:"id"`
 	Title       string `json:"title"`
 	Description string `json:"description"`
 	Done        bool   `json:"done"`
 }
 
 type ListsItem struct {
-	Id     int
-	ListId int
-	ItemId int
+	Id     uint64
+	ListId uint64
+	ItemId uint64
 }
 
 type UpdateListInput struct {

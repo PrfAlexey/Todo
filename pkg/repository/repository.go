@@ -28,8 +28,8 @@ func NewRepository(pool *pgxpool.Pool) pkg.Repository {
 	}
 }
 
-func (r *Repository) CreateUser(user models.User) (int, error) {
-	var id int
+func (r *Repository) CreateUser(user models.User) (uint64, error) {
+	var id uint64
 	query := fmt.Sprintf("INSERT INTO %s (name, username, password_hash) values ($1, $2, $3) RETURNING id", usersTable)
 	row := r.pool.QueryRow(context.Background(), query, user.Name, user.Username, user.Password)
 	if err := row.Scan(&id); err != nil {
@@ -46,12 +46,12 @@ func (r *Repository) GetUser(username, password string) (models.User, error) {
 	return user, err
 }
 
-func (r *Repository) CreateList(userId int, list models.TodoList) (int, error) {
+func (r *Repository) CreateList(userId uint64, list models.TodoList) (uint64, error) {
 	tx, err := r.pool.Begin(context.Background())
 	if err != nil {
 		return 0, err
 	}
-	var id int
+	var id uint64
 	row := tx.QueryRow(context.Background(), "INSERT INTO todo_lists (title, description) VALUES ($1, $2) RETURNING id", list.Title, list.Description)
 	if err := row.Scan(&id); err != nil {
 		tx.Rollback(context.Background())
@@ -67,7 +67,7 @@ func (r *Repository) CreateList(userId int, list models.TodoList) (int, error) {
 	return id, tx.Commit(context.Background())
 }
 
-func (r *Repository) GetAllLists(userID int) ([]models.TodoList, error) {
+func (r *Repository) GetAllLists(userID uint64) ([]models.TodoList, error) {
 	var lists []models.TodoList
 
 	err := pgxscan.Select(context.Background(), r.pool, &lists, `SELECT tl.id, tl.title, tl.description FROM todo_lists tl 
@@ -78,7 +78,7 @@ func (r *Repository) GetAllLists(userID int) ([]models.TodoList, error) {
 	return lists, nil
 }
 
-func (r *Repository) GetListByID(userID int, listID int) (models.TodoList, error) {
+func (r *Repository) GetListByID(userID, listID uint64) (models.TodoList, error) {
 	var list models.TodoList
 	err := pgxscan.Get(context.Background(), r.pool, &list, `SELECT tl.id, tl.title, tl.description FROM todo_lists tl 
                                                                   INNER JOIN user_lists ul ON tl.id = ul.list_id WHERE ul.user_id = $1 AND ul.list_id = $2`, userID, listID)
@@ -88,13 +88,13 @@ func (r *Repository) GetListByID(userID int, listID int) (models.TodoList, error
 	return list, nil
 }
 
-func (r *Repository) DeleteList(userID, listID int) error {
+func (r *Repository) DeleteList(userID, listID uint64) error {
 	_, err := r.pool.Exec(context.Background(), `DELETE FROM todo_lists tl USING user_lists ul 
                                                         WHERE tl.id = ul.list_id AND ul.user_id = $1 AND ul.list_id = $2`, userID, listID)
 	return err
 }
 
-func (r *Repository) UpdateList(userID, listID int, input models.UpdateListInput) error {
+func (r *Repository) UpdateList(userID, listID uint64, input models.UpdateListInput) error {
 	setValues := make([]string, 0)
 	args := make([]interface{}, 0)
 	argId := 1
@@ -119,12 +119,12 @@ func (r *Repository) UpdateList(userID, listID int, input models.UpdateListInput
 	return err
 }
 
-func (r *Repository) CreateItems(listID int, item models.TodoItem) (int, error) {
+func (r *Repository) CreateItems(listID uint64, item models.TodoItem) (uint64, error) {
 	tx, err := r.pool.Begin(context.Background())
 	if err != nil {
 		return 0, err
 	}
-	var itemID int
+	var itemID uint64
 	row := tx.QueryRow(context.Background(), "INSERT INTO todo_items (title, description) VALUES ($1, $2) RETURNING id", item.Title, item.Description)
 	err = row.Scan(&itemID)
 	if err != nil {
@@ -140,7 +140,7 @@ func (r *Repository) CreateItems(listID int, item models.TodoItem) (int, error) 
 	return itemID, tx.Commit(context.Background())
 }
 
-func (r *Repository) GetAllItems(userID, listID int) ([]models.TodoItem, error) {
+func (r *Repository) GetAllItems(userID, listID uint64) ([]models.TodoItem, error) {
 	var items []models.TodoItem
 	err := pgxscan.Select(context.Background(), r.pool, &items, `SELECT ti.id, ti.title, ti.description, ti.done FROM todo_items ti INNER JOIN lists_items li on li.item_id = ti.id
 									INNER JOIN user_lists ul on ul.list_id = li.list_id WHERE li.list_id = $1 AND ul.user_id = $2`, listID, userID)

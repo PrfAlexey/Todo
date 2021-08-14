@@ -12,7 +12,7 @@ import (
 func (h *Handler) CreateList(c echo.Context) error {
 	userId, err := middleware.GetUserID(c)
 	if err != nil {
-		return err
+		return echo.NewHTTPError(http.StatusUnauthorized, err.Error())
 	}
 	var input models.TodoList
 	if err := c.Bind(&input); err != nil {
@@ -58,7 +58,7 @@ func (h *Handler) GetListById(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
-	list, err1 := h.services.GetListByID(userID, listID)
+	list, err1 := h.services.GetListByID(userID, uint64(listID))
 	if err1 != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err1.Error())
 	}
@@ -85,7 +85,7 @@ func (h *Handler) UpdateList(c echo.Context) error {
 	if err := c.Bind(&input); err != nil {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
-	err = h.services.UpdateList(userID, listID, input)
+	err = h.services.UpdateList(userID, uint64(listID), input)
 	if err.Error() == "update structure has no values" {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	} else if err != nil {
@@ -105,7 +105,7 @@ func (h *Handler) DeleteList(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
-	err = h.services.DeleteList(userID, listID)
+	err = h.services.DeleteList(userID, uint64(listID))
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}

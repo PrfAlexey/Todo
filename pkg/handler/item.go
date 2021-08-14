@@ -23,7 +23,7 @@ func (h *Handler) CreateItem(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 
-	id, err := h.services.CreateItem(userID, listID, input)
+	id, err := h.services.CreateItem(userID, uint64(listID), input)
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
@@ -44,7 +44,7 @@ func (h *Handler) GetAllItems(c echo.Context) error {
 		return echo.NewHTTPError(http.StatusBadRequest, err.Error())
 	}
 	var items []models.TodoItem
-	items, err = h.services.GetAllItems(userID, listID)
+	items, err = h.services.GetAllItems(userID, uint64(listID))
 	if err != nil {
 		return echo.NewHTTPError(http.StatusInternalServerError, err.Error())
 	}
